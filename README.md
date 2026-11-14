@@ -3,6 +3,9 @@
 Source for the WooFeeds Pro product website at
 [soft.sahoolat.pk](https://soft.sahoolat.pk/).
 
+WooFeeds Pro plugin and license-service source:
+[dev-abrar-hussain/WooFeeds-Pro-Plugin](https://github.com/dev-abrar-hussain/WooFeeds-Pro-Plugin).
+
 The site is intentionally static: it has no runtime dependencies, is quick to
 serve through Nginx, and includes the public product documentation and current
 plugin download.
