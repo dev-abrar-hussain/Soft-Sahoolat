@@ -1,0 +1,9 @@
+{
+  "name": "soft-sahoolat",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tools/validate-website.mjs"
+  }
+}
+
