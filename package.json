@@ -1,9 +1,39 @@
 {
   "name": "soft-sahoolat",
+  "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "test": "node tools/validate-website.mjs"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run typecheck && node tools/validate-website.mjs"
+  },
+  "dependencies": {
+    "@tiptap/extension-highlight": "3.34.0",
+    "@tiptap/extension-image": "3.34.0",
+    "@tiptap/extension-link": "3.34.0",
+    "@tiptap/extension-placeholder": "3.34.0",
+    "@tiptap/extension-table": "3.34.0",
+    "@tiptap/extension-text-align": "3.34.0",
+    "@tiptap/extension-underline": "3.34.0",
+    "@tiptap/react": "3.34.0",
+    "@tiptap/starter-kit": "3.34.0",
+    "bcryptjs": "3.0.3",
+    "file-type": "22.3.0",
+    "jose": "6.2.17",
+    "mysql2": "3.24.6",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sanitize-html": "2.18.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/sanitize-html": "^2.16.0",
+    "typescript": "^5.9.3"
   }
 }
 

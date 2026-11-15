@@ -1,0 +1,7 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { BlogCard } from '@/components/BlogCard';
+import { listPublishedPosts, publishedPostCount } from '@/lib/posts';
+export const dynamic = 'force-dynamic';
+export const metadata: Metadata = { title: 'WooCommerce Product Feed Blog', description: 'Practical WooCommerce feed guides for Google Merchant, Meta Commerce and AI shopping.' };
+export default async function BlogPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) { const q=await searchParams; const page=Math.max(1,Number(q.page)||1); const perPage=9; const [posts,total]=await Promise.all([listPublishedPosts(perPage,(page-1)*perPage),publishedPostCount()]); const pages=Math.max(1,Math.ceil(total/perPage)); return <main id="main"><section className="page-hero"><div className="container"><span className="eyebrow">WooCommerce growth library</span><h1>Build cleaner product feeds.</h1><p>Practical guidance for Google Merchant Center, Meta Commerce Manager and AI shopping catalogs.</p></div></section><section className="section"><div className="container"><div className="blog-grid">{posts.map(post=><BlogCard post={post} key={post.id}/>)}</div>{!posts.length&&<div className="empty-state">No published articles yet.</div>}{pages>1&&<nav className="pagination" aria-label="Blog pages">{page>1&&<Link href={`/blog?page=${page-1}`}>Previous</Link>}<span>Page {page} of {pages}</span>{page<pages&&<Link href={`/blog?page=${page+1}`}>Next</Link>}</nav>}</div></section></main>; }

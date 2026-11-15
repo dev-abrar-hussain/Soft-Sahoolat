@@ -1,0 +1,2 @@
+import { notFound } from 'next/navigation'; import { requireAdmin } from '@/lib/auth'; import { findPost } from '@/lib/posts'; import { PostEditor } from '@/components/admin/PostEditor';
+export default async function EditPost({params}:{params:Promise<{id:string}>}){await requireAdmin();const post=await findPost(Number((await params).id));if(!post)notFound();return <main className="admin-page wide"><PostEditor post={post}/></main>}

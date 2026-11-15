@@ -1,53 +1,21 @@
 # Soft Sahoolat
 
-Source for the WooFeeds Pro product website at
-[soft.sahoolat.pk](https://soft.sahoolat.pk/).
+Production website and blog CMS for WooFeeds Pro, live at [soft.sahoolat.pk](https://soft.sahoolat.pk/).
 
-WooFeeds Pro plugin and license-service source:
-[dev-abrar-hussain/WooFeeds-Pro-Plugin](https://github.com/dev-abrar-hussain/WooFeeds-Pro-Plugin).
+## Stack
 
-The site is intentionally static: it has no runtime dependencies, is quick to
-serve through Nginx, and includes the public product documentation and current
-plugin download.
+- Next.js 16 App Router and React 19
+- MySQL with server-side route handlers
+- TipTap rich editor with toolbar, selection bubble menu, tables, images and formatting
+- Signed HTTP-only admin sessions, bcrypt passwords, origin checks and login throttling
+- Dynamic SEO metadata, article schema, sitemap and robots rules
 
-## Included
+## Local development
 
-- WooFeeds Pro marketing and feature pages
-- Google Merchant, Meta Commerce, and ChatGPT setup documentation
-- Licensing and troubleshooting guides
-- SEO metadata, structured data, `robots.txt`, and `sitemap.xml`
-- Direct WooFeeds Pro release download with a published SHA-256 checksum
-- Nginx deployment configuration
+Copy `.env.example` to `.env.local`, provide the MySQL URL and a 32+ character session secret, then run `npm install` and `npm run dev`.
 
-## Validate locally
+Use `npm test` and `npm run build` for validation. The admin is at `/admin/login`. Uploaded images are written to `UPLOAD_DIR`; production maps that directory to `/uploads/blog/` through Nginx.
 
-Node.js 20 or newer is recommended.
+## Production
 
-```bash
-npm test
-```
-
-To preview the site from this directory:
-
-```bash
-python -m http.server 4173
-```
-
-Then open `http://127.0.0.1:4173/`.
-
-## Production deployment
-
-Production uses versioned releases below
-`/var/www/soft.sahoolat.pk/releases/`. The active release is selected through
-the `/var/www/soft.sahoolat.pk/current` symlink, which makes rollback a single
-symlink update.
-
-The initial Nginx virtual host is in
-[`deploy/nginx-soft.sahoolat.pk.conf`](deploy/nginx-soft.sahoolat.pk.conf).
-After DNS points to the server, Certbot can attach the certificate and enable
-the HTTP-to-HTTPS redirect:
-
-```bash
-certbot --nginx -d soft.sahoolat.pk --redirect
-```
-
+Next.js standalone output runs as a systemd service on `127.0.0.1:3105`. Nginx terminates TLS and proxies requests. Versioned releases live under `/var/www/soft.sahoolat.pk/releases/`, while blog uploads remain in the shared directory.

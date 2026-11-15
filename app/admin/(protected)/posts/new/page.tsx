@@ -1,0 +1,1 @@
+import { requireAdmin } from '@/lib/auth'; import { PostEditor } from '@/components/admin/PostEditor'; export default async function NewPost(){await requireAdmin();return <main className="admin-page wide"><PostEditor/></main>}
