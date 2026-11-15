@@ -1,2 +1,21 @@
-import { NextResponse } from 'next/server'; import bcrypt from 'bcryptjs'; import type { RowDataPacket } from 'mysql2/promise'; import { db } from '@/lib/db'; import { createSessionToken, mutationIsSameOrigin, SESSION_COOKIE, sessionCookieOptions } from '@/lib/auth'; import type { AdminUser } from '@/lib/types';
-type Row=AdminUser&RowDataPacket&{password_hash:string}; export async function POST(req:Request){if(!await mutationIsSameOrigin(req))return NextResponse.json({error:'Invalid request origin.'},{status:403});const ip=(req.headers.get('x-forwarded-for')||'unknown').split(',')[0].trim();const[[count]]=await db().query<(RowDataPacket&{total:number})[]>('SELECT COUNT(*) total FROM login_attempts WHERE ip_address=? AND attempted_at>DATE_SUB(NOW(), INTERVAL 15 MINUTE)',[ip]);if(Number(count?.total||0)>=8)return NextResponse.json({error:'Too many attempts. Try again in 15 minutes.'},{status:429});const body=await req.json().catch(()=>({}));const username=String(body.username||'').trim();const[rows]=await db().query<Row[]>('SELECT id,username,password_hash,must_change_password,last_login_at FROM admins WHERE username=? LIMIT 1',[username]);const admin=rows[0];const hash=admin?.password_hash.replace(/^\$2y\$/,'$2b$')||'$2b$12$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalid';const valid=await bcrypt.compare(String(body.password||''),hash);if(!valid){await db().execute('INSERT INTO login_attempts(ip_address) VALUES(?)',[ip]);return NextResponse.json({error:'Invalid username or password.'},{status:401})}await db().execute('DELETE FROM login_attempts WHERE ip_address=?',[ip]);await db().execute('UPDATE admins SET last_login_at=NOW() WHERE id=?',[admin.id]);const token=await createSessionToken(admin);const res=NextResponse.json({ok:true,mustChangePassword:admin.must_change_password===1});res.cookies.set(SESSION_COOKIE,token,sessionCookieOptions());return res}
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import type { RowDataPacket } from 'mysql2/promise';
+import { db } from '@/lib/db';
+import { createSessionToken, mutationIsSameOrigin, SESSION_COOKIE, sessionCookieOptions } from '@/lib/auth';
+import type { AdminUser } from '@/lib/types';
+type Row=AdminUser&RowDataPacket&{password_hash:string};
+export async function POST(req:Request){
+  if(!await mutationIsSameOrigin(req))return NextResponse.json({error:'Invalid request origin.'},{status:403});
+  const ip=(req.headers.get('x-forwarded-for')||'unknown').split(',')[0].trim();
+  await db().execute('DELETE FROM login_attempts WHERE attempted_at < DATE_SUB(NOW(), INTERVAL 1 DAY)');
+  const[[count]]=await db().query<(RowDataPacket&{total:number})[]>('SELECT COUNT(*) total FROM login_attempts WHERE ip_address=? AND attempted_at>DATE_SUB(NOW(), INTERVAL 15 MINUTE)',[ip]);
+  if(Number(count?.total||0)>=8)return NextResponse.json({error:'Too many attempts. Try again in 15 minutes.'},{status:429});
+  const body=await req.json().catch(()=>({}));const username=String(body.username||'').trim();
+  const[rows]=await db().query<Row[]>('SELECT id,username,password_hash,must_change_password,last_login_at FROM admins WHERE username=? LIMIT 1',[username]);
+  const admin=rows[0];const hash=admin?.password_hash.replace(/^\$2y\$/,'$2b$')||'$2b$12$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalid';
+  const valid=await bcrypt.compare(String(body.password||''),hash);
+  if(!valid){await db().execute('INSERT INTO login_attempts(ip_address) VALUES(?)',[ip]);return NextResponse.json({error:'Invalid username or password.'},{status:401})}
+  await db().execute('DELETE FROM login_attempts WHERE ip_address=?',[ip]);await db().execute('UPDATE admins SET last_login_at=NOW() WHERE id=?',[admin.id]);
+  const token=await createSessionToken(admin);const res=NextResponse.json({ok:true,mustChangePassword:admin.must_change_password===1});res.cookies.set(SESSION_COOKIE,token,sessionCookieOptions());return res;
+}
