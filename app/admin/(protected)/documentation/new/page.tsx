@@ -1,0 +1,1 @@
+import { requireAdmin } from '@/lib/auth';import { DocumentationEditor } from '@/components/admin/DocumentationEditor';export default async function NewDocumentation(){await requireAdmin();return <main className="admin-page wide"><DocumentationEditor/></main>}

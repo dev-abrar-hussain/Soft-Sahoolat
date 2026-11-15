@@ -37,3 +37,20 @@ CREATE TABLE IF NOT EXISTS posts (
     KEY posts_updated_index (updated_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS documentation_pages (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL,
+    content LONGTEXT NOT NULL,
+    seo_title VARCHAR(255) NOT NULL,
+    meta_description VARCHAR(320) NOT NULL,
+    status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY documentation_pages_slug_unique (slug),
+    KEY documentation_pages_status_order_index (status, sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
