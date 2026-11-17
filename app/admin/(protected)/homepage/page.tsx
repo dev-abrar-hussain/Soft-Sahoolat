@@ -1,0 +1,1 @@
+import { requireAdmin } from '@/lib/auth';import { getHomepageContent } from '@/lib/homepage';import { HomepageEditor } from '@/components/admin/HomepageEditor';export default async function HomepageAdmin(){await requireAdmin();const content=await getHomepageContent();return <main className="admin-page wide"><HomepageEditor content={content}/></main>}
